@@ -1,5 +1,14 @@
 import random
-verbs_dict = {"fare" : ["do", "make"],
+import sys
+
+multi_verbs = {"fare" : ["do", "make"],
+               "prendere" : ["get", "take"],
+               "sentire" : ["hear", "feel"],
+               "tenere" : ["hold", "keep"],
+               "piacere" : ["like", "enjoy"]
+               }
+
+verbs_dict = {
               "andare" : "go",
               "venire" : "come",
               "parlare" : "speak",
@@ -7,17 +16,15 @@ verbs_dict = {"fare" : ["do", "make"],
               "portare" : "wear",
               "arrivare" : "arrive",
               "mettere" : "put",
-              "prendere" : ["get", "take"],
               "volere" : "want",
               "potere" : "can",
               "avere" : "have",
               "credere" : "believe",
               "capire" : "understand",
-              "sentire" : ["hear", "feel"],
               "rimanere" : "remain",
               "lasciare" : "leave"}
 
-verbs_dict2 = {"tenere" : ["hold", "keep"],
+verbs_dict2 = {
                "diventare" : "become",
                "lavorare" : "work",
                "usare" : "use",
@@ -30,63 +37,65 @@ verbs_dict2 = {"tenere" : ["hold", "keep"],
                "appire" : "open",
                "seguire" : "follow",
                "aspettare" : "wait",
-               "piacere" : ["like", "enjoy"],
                "guardare" : "watch",
                "morire" : "die",
                "finire" : "finish"}
 
-hint_count = 0
+class VerbGame:
+    def __init__(self):
+        self.list1 = list(verbs_dict.keys())
+        self.list2 = list(verbs_dict2.keys())
+        self.multi_list = list(multi_verbs.keys())
+        self.total_hint_count = 0
+        self.current_verb_hint_count = 0
+        self.guess = None
+        self.hint = None
+        self.current_verb = None
+        self.answer = None
 
-def print_hint(answer):
-    print(f"{answer[0]} ", end="")
-    for i in range(len(answer) - 1):
-        print("- ", end="")
-    print("")
-
-def show_hint(answer):
-    hint_count += 1
-    if type(answer) == list:
-        print_hint(answer[0])
-        print_hint(answer[1])
-    else:
-        print_hint(answer)
-
-italian_verbs = list(verbs_dict.keys())
-
-index = random.randint(0, len(italian_verbs) - 1)
-verb = italian_verbs[index]
-answer = verbs_dict[verb]
-guessed_correct = False
-
-while len(italian_verbs) > 0:
-    if guessed_correct:
-        index = random.randint(0, len(italian_verbs) - 1)
-        verb = italian_verbs[index]
-        answer = verbs_dict[verb]
-    print(verb)
-    guess = input()
-    if guess == "#":
-        show_hint(answer)
-        guessed_correct = False
-        continue
-    else:
-        if type(answer) == list:
-            print("two meanings...")
-            if guess in answer:
-                print("CORRECT!!!")
-                guessed_correct = True
-            else:
-                print("WRONG!!!")
-                show_hint(answer)
-                guessed_correct = False
-                continue
+    def show_hint(self):
+        self.current_verb_hint_count += 1
+        if self.current_verb_hint_count == 1:
+            self.hint[0] = self.answer[0]
+        elif self.current_verb_hint_count == len(self.answer):
+            self.guess = self.answer
         else:
-            if guess == answer:
-                print("CORRECT!!!")
-                guessed_correct = True
-            else:
-                show_hint(answer)
-                guessed_correct = False
-                continue
-    italian_verbs.pop(index)
-print(f"you finished with {hint_count} hints")
+            index = random.randint(1, len(self.answer) - 1)
+            while self.hint[index] != '-':
+                index = random.randint(1, len(self.answer) - 1)
+            self.hint[index] = self.answer[index]
+        print(''.join(self.hint))
+
+    def play_verb(self):
+        index = random.randint(0, len(self.list1) - 1)
+        self.current_verb = self.list1[index]
+        self.current_verb_hint_count = 0
+        guessed_correct = False
+        self.answer = verbs_dict[self.current_verb]
+        self.hint = ['-'] * len(self.answer)
+        while not guessed_correct:
+            print()
+            print(self.current_verb)
+            print()
+            self.guess = input()
+            if self.guess == '#':
+                self.show_hint()
+            elif self.guess ==  'q':
+                sys.exit()
+            elif self.guess == self.answer:
+                print("\nCORRECT!\n")
+            elif self.guess != self.answer:
+                print("\nINCORRECT!\n")
+                self.show_hint()
+        return index
+
+    def play1(self):
+        while len(self.list1) > 0:
+            index = self.play_verb()
+            self.list1.pop(index)
+
+
+if __name__ == "__main__":
+    vg = VerbGame() 
+    vg.play1()
+
