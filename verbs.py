@@ -55,6 +55,7 @@ class VerbGame:
 
     def show_hint(self):
         self.current_verb_hint_count += 1
+        self.total_hint_count += 1
         if self.current_verb_hint_count == 1:
             self.hint[0] = self.answer[0]
         elif self.current_verb_hint_count == len(self.answer):
@@ -84,6 +85,7 @@ class VerbGame:
                 sys.exit()
             elif self.guess == self.answer:
                 print("\nCORRECT!\n")
+                guessed_correct = True
             elif self.guess != self.answer:
                 print("\nINCORRECT!\n")
                 self.show_hint()
@@ -93,6 +95,7 @@ class VerbGame:
         while len(self.list1) > 0:
             index = self.play_verb()
             self.list1.pop(index)
+        print(f"total hints: {self.total_hint_count}")
 
 
 if __name__ == "__main__":
